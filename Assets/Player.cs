@@ -46,15 +46,6 @@ public class Player : MonoBehaviour
     private int facingDirection = 1;
 
     [SerializeField]
-    private Transform groundCheck;
-
-    [SerializeField]
-    private float groundCheckRadius;
-
-    [SerializeField]
-    private LayerMask whatIsGround;
-
-    [SerializeField]
     private float movementSpeed;
 
     [SerializeField]
@@ -73,28 +64,24 @@ public class Player : MonoBehaviour
 
     public KeyCode attack1;
 
+    public Transform groundcheck;
+
+    public float groundCheckRadius;
+
+    public LayerMask whatIsGround;
+
     private void Start()
     {
         rb = GetComponent<Rigidbody2D>();
         cc = GetComponent<CapsuleCollider2D>();
-
         capsuleColliderSize = cc.size;
-
-        Debug.Log("can tnis work");
     }
 
     private void CheckGround()
     {
-        // LayerMask = LayerMask.NameToLayer("Floor");
-        // Vector2 newPos = transform.position - Vector3 (new Vector2(0.0f, .18f));
-        Vector2 newPos =
-            transform.position - (Vector3)(new Vector2(0.0f, .18f));
+        isGrounded = Physics2D.OverlapCircle(groundcheck.position, groundCheckRadius, whatIsGround);
 
-        // groundCheck.position = newPos;
-        isGrounded =
-            Physics2D.OverlapCircle(newPos, groundCheckRadius, whatIsGround);
-
-        if (rb.velocity.y <= 0.0f)
+        if (rb.velocity.y <= -0.0f)
         {
             isJumping = false;
         }
@@ -103,18 +90,24 @@ public class Player : MonoBehaviour
         {
             canJump = true;
         }
-
-        // Debug.Log("touching ground " + isGrounded);
-
-        // OnDrawGizmosSelected();
     }
 
     private void OnDrawGizmos()
     {
-        Vector2 newPos =
-            transform.position - (Vector3)(new Vector2(0.0f, .18f));
+        Vector2 newPos = transform.position - (Vector3)(new Vector2(0.0f, .18f));
 
-        // Gizmos.DrawWireSphere(newPos, groundCheckRadius);
+        Vector2 checkPosV2 =
+        // transform.position - (Vector3)(new Vector2(0.0f, capsuleColliderSize.y / 2));
+
+        transform.position; // - (Vector3)(new Vector2(0.0f, capsuleColliderSize.x));
+
+        Vector2 checkPosv3 =
+            // transform.position - (Vector3)(new Vector2(0.0f, capsuleColliderSize.y / 2));
+            transform.position - (Vector3)(new Vector2(0.0f, capsuleColliderSize.y));
+
+        Gizmos.DrawWireSphere(checkPosv3, groundCheckRadius);
+
+        // OnDrawGizmosSelected();
     }
 
     private void ApplyMovement()
@@ -130,12 +123,14 @@ public class Player : MonoBehaviour
         //If on slope
         else if (isGrounded && isOnSlope && canWalkOnSlope && !isJumping)
         {
-            newVelocity
-                .Set(movementSpeed * slopeNormalPerp.x * -xInput,
-                movementSpeed * slopeNormalPerp.y * -xInput);
+            newVelocity.Set(
+                movementSpeed * slopeNormalPerp.x * -xInput,
+                movementSpeed * slopeNormalPerp.y * -xInput
+            );
             rb.velocity = newVelocity;
         }
         //If in air
+
         else if (!isGrounded)
         {
             newVelocity.Set(movementSpeed * xInput, rb.velocity.y);
@@ -145,28 +140,28 @@ public class Player : MonoBehaviour
 
     private void SlopeCheck()
     {
+        //original
         Vector2 checkPos =
-            transform.position -
-            (Vector3)(new Vector2(0.0f, capsuleColliderSize.y / 2));
+            transform.position - (Vector3)(new Vector2(0.0f, capsuleColliderSize.y / 2));
 
-        SlopeCheckHorizontal (checkPos);
-        SlopeCheckVertical (checkPos);
+        SlopeCheckHorizontal(checkPos);
+        SlopeCheckVertical(checkPos);
     }
 
     private void SlopeCheckHorizontal(Vector2 checkPos)
     {
-        RaycastHit2D slopeHitFront =
-            Physics2D
-                .Raycast(checkPos,
-                transform.right,
-                slopeCheckDistance,
-                whatIsGround);
-        RaycastHit2D slopeHitBack =
-            Physics2D
-                .Raycast(checkPos,
-                -transform.right,
-                slopeCheckDistance,
-                whatIsGround);
+        RaycastHit2D slopeHitFront = Physics2D.Raycast(
+            checkPos,
+            transform.right,
+            slopeCheckDistance,
+            whatIsGround
+        );
+        RaycastHit2D slopeHitBack = Physics2D.Raycast(
+            checkPos,
+            -transform.right,
+            slopeCheckDistance,
+            whatIsGround
+        );
 
         if (slopeHitFront)
         {
@@ -189,18 +184,20 @@ public class Player : MonoBehaviour
 
     private void SlopeCheckVertical(Vector2 checkPos)
     {
-        RaycastHit2D hit =
-            Physics2D
-                .Raycast(checkPos,
-                Vector2.down,
-                slopeCheckDistance,
-                whatIsGround);
+        RaycastHit2D hit = Physics2D.Raycast(
+            checkPos,
+            Vector2.down,
+            slopeCheckDistance,
+            whatIsGround
+        );
 
         if (hit)
         {
             slopeNormalPerp = Vector2.Perpendicular(hit.normal).normalized;
 
             slopeDownAngle = Vector2.Angle(hit.normal, Vector2.up);
+
+            // Debug.DrawLine(Vector2.zero, Vector3.Angle(hit.normal, Vector2.up), Color.magenta);
 
             if (slopeDownAngle != lastSlopeAngle)
             {
@@ -234,8 +231,8 @@ public class Player : MonoBehaviour
 
     private void FixedUpdate()
     {
-        CheckGround();
-        SlopeCheck();
+        CheckGround(); //can move side to side but not jump
+        SlopeCheck(); //on a hill will just keep sliding down
         ApplyMovement();
     }
 
@@ -262,15 +259,6 @@ public class Player : MonoBehaviour
     {
         xInput = Input.GetAxisRaw("Horizontal");
 
-        // if (xInput == 1 && facingDirection == -1)
-        // {
-        //     Flip();
-        // }
-        // else if (xInput == -1 && facingDirection == 1)
-        // {
-        //     Flip();
-        // }
-
         if (Input.GetButtonDown("Jump"))
         {
             Jump();
@@ -293,14 +281,15 @@ public class Player : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.UpArrow))
         {
+            // Debug.Log("This bitch finnaly" );
             anim.SetTrigger("playerRun");
+            // Debug.Log("Text: " );
 
-            if (Input.GetKeyUp(KeyCode.UpArrow))
-            {
-                anim.SetTrigger("playerRun");
-            }
+            // if (Input.GetKeyUp(KeyCode.UpArrow))
+            // {
+            //     anim.SetTrigger("playerRun");
+            // }
         }
-
         CheckInput();
     }
 }
