@@ -21,8 +21,6 @@ public class Player : MonoBehaviour
 
     private Vector2 newForce;
 
-    private Vector2 capsuleColliderSize;
-
     private Vector2 slopeNormalPerp;
 
     private bool isGrounded;
@@ -73,8 +71,6 @@ public class Player : MonoBehaviour
     private void Start()
     {
         rb = GetComponent<Rigidbody2D>();
-        cc = GetComponent<CapsuleCollider2D>();
-        capsuleColliderSize = cc.size;
     }
 
     private void CheckGround()
@@ -90,24 +86,6 @@ public class Player : MonoBehaviour
         {
             canJump = true;
         }
-    }
-
-    private void OnDrawGizmos()
-    {
-        Vector2 newPos = transform.position - (Vector3)(new Vector2(0.0f, .18f));
-
-        Vector2 checkPosV2 =
-        // transform.position - (Vector3)(new Vector2(0.0f, capsuleColliderSize.y / 2));
-
-        transform.position; // - (Vector3)(new Vector2(0.0f, capsuleColliderSize.x));
-
-        Vector2 checkPosv3 =
-            // transform.position - (Vector3)(new Vector2(0.0f, capsuleColliderSize.y / 2));
-            transform.position - (Vector3)(new Vector2(0.0f, capsuleColliderSize.y));
-
-        Gizmos.DrawWireSphere(checkPosv3, groundCheckRadius);
-
-        // OnDrawGizmosSelected();
     }
 
     private void ApplyMovement()
@@ -140,9 +118,7 @@ public class Player : MonoBehaviour
 
     private void SlopeCheck()
     {
-        //original
-        Vector2 checkPos =
-            transform.position - (Vector3)(new Vector2(0.0f, capsuleColliderSize.y / 2));
+        Vector2 checkPos = -transform.position;
 
         SlopeCheckHorizontal(checkPos);
         SlopeCheckVertical(checkPos);
@@ -196,8 +172,6 @@ public class Player : MonoBehaviour
             slopeNormalPerp = Vector2.Perpendicular(hit.normal).normalized;
 
             slopeDownAngle = Vector2.Angle(hit.normal, Vector2.up);
-
-            // Debug.DrawLine(Vector2.zero, Vector3.Angle(hit.normal, Vector2.up), Color.magenta);
 
             if (slopeDownAngle != lastSlopeAngle)
             {
@@ -279,17 +253,17 @@ public class Player : MonoBehaviour
     {
         xInput = Input.GetAxisRaw("Horizontal");
 
-        if (Input.GetKeyDown(KeyCode.UpArrow))
-        {
-            // Debug.Log("This bitch finnaly" );
-            anim.SetTrigger("playerRun");
-            // Debug.Log("Text: " );
+        // if (Input.GetKeyDown(KeyCode.UpArrow))
+        // {
+        //     // Debug.Log("This bitch finnaly" );
+        //     anim.SetTrigger("playerRun");
+        //     // Debug.Log("Text: " );
 
-            // if (Input.GetKeyUp(KeyCode.UpArrow))
-            // {
-            //     anim.SetTrigger("playerRun");
-            // }
-        }
+        //     // if (Input.GetKeyUp(KeyCode.UpArrow))
+        //     // {
+        //     //     anim.SetTrigger("playerRun");
+        //     // }
+        // }
         CheckInput();
     }
 }
