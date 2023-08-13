@@ -77,6 +77,8 @@ public class Player : MonoBehaviour
     {
         isGrounded = Physics2D.OverlapCircle(groundcheck.position, groundCheckRadius, whatIsGround);
 
+        Debug.Log("isGrounded: " + isGrounded);
+
         if (rb.velocity.y <= -0.0f)
         {
             isJumping = false;
@@ -232,6 +234,16 @@ public class Player : MonoBehaviour
     private void CheckInput()
     {
         xInput = Input.GetAxisRaw("Horizontal");
+
+
+         if (xInput == 1 && facingDirection == -1)
+        {
+            Flip();
+        }
+        else if (xInput == -1 && facingDirection == 1) 
+        {            
+            Flip();
+        }    
 
         if (Input.GetButtonDown("Jump"))
         {
