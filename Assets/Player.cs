@@ -1,6 +1,8 @@
+using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
+// using UnityEngine;
+using UnityEngine.InputSystem;
 
 //1
 //https://awesometuts.com/blog/unity-vectors/
@@ -32,6 +34,8 @@ public class Player : MonoBehaviour
     private bool isJumping;
 
     private bool canJump;
+
+    private int canDoubleJump = 0;
 
     private float slopeSideAngle;
 
@@ -71,13 +75,15 @@ public class Player : MonoBehaviour
     private void Start()
     {
         rb = GetComponent<Rigidbody2D>();
+        
+        anim = GetComponent<Animator>();
     }
 
     private void CheckGround()
     {
         isGrounded = Physics2D.OverlapCircle(groundcheck.position, groundCheckRadius, whatIsGround);
 
-        Debug.Log("isGrounded: " + isGrounded);
+        // Debug.Log("isGrounded: " + isGrounded);
 
         if (rb.velocity.y <= -0.0f)
         {
@@ -92,6 +98,9 @@ public class Player : MonoBehaviour
 
     private void ApplyMovement()
     {
+
+        //movement speed is always .07
+        // Debug.Log("movementspeed: " + newVe);
         // anim.SetTrigger("playerRun");
         //if not on slope
         if (isGrounded && !isOnSlope && !isJumping)
@@ -99,6 +108,7 @@ public class Player : MonoBehaviour
             // Debug.Log("This one");
             newVelocity.Set(movementSpeed * xInput, 0.0f);
             rb.velocity = newVelocity;
+            // Debug.Log("newVelocity: " + newVelocity);
         }
         //If on slope
         else if (isGrounded && isOnSlope && canWalkOnSlope && !isJumping)
@@ -220,15 +230,45 @@ public class Player : MonoBehaviour
 
     private void Jump()
     {
+        // canDoubleJump++;
+      
+        Debug.Log("canJump: " + canJump);
+
         if (canJump)
         {
+            
             canJump = false;
             isJumping = true;
             newVelocity.Set(0.0f, 0.0f);
             rb.velocity = newVelocity;
             newForce.Set(0.0f, jumpForce);
             rb.AddForce(newForce, ForceMode2D.Impulse);
+            
+
         }
+
+        // if(canDoubleJump < 10)
+        // {
+        //     canJump = false;
+        //     isJumping = true;
+        //     newVelocity.Set(0.0f, 0.0f);
+        //     rb.velocity = newVelocity;
+        //     newForce.Set(0.0f, jumpForce);
+        //     rb.AddForce(newForce, ForceMode2D.Impulse);
+            
+        // }
+
+        //original
+        // if (canJump)
+        // {
+            
+        //     canJump = false;
+        //     isJumping = true;
+        //     newVelocity.Set(0.0f, 0.0f);
+        //     rb.velocity = newVelocity;
+        //     newForce.Set(0.0f, jumpForce);
+        //     rb.AddForce(newForce, ForceMode2D.Impulse);
+        // }
     }
 
     private void CheckInput()
@@ -261,21 +301,115 @@ public class Player : MonoBehaviour
         }
     }
 
+
+    
+    
     void Update()
     {
+
+        // transform.position = myPlay.position + myPos;
+
         xInput = Input.GetAxisRaw("Horizontal");
 
-        // if (Input.GetKeyDown(KeyCode.UpArrow))
+        Debug.Log(xInput);
+
+
+
+        if(xInput != 0)
+        {
+            Debug.Log("animation should be running now");
+            anim.SetBool("startRunAnim", true);
+        }
+
+        Debug.Log(movementSpeed);
+
+        // if(movementSpeed > .05)
         // {
-        //     // Debug.Log("This bitch finnaly" );
-        //     anim.SetTrigger("playerRun");
+        //     Debug.Log("turn on isIdling and start idling animation");
+        // }
+
+        
+        //  if(xInput == 0)
+        // {
+        //     anim.SetBool("startRunAnim", false);
+        //     Debug.Log("is this ever being called?");
+        //     anim.SetBool("isIdling", true);
+        // }
+        
+
+        // anim.SetBool("startRunAnim", false);
+
+        // if (Input.GetKeyDown(KeyCode.UpArrow))input 
+        // if (Input.GetButton("ightArrow"))
+        // {
+
+        //     Debug.Log("this hoe working as im jumping");
+    
+        //     // anim.SetTrigger("startRunAnim");
+
+        //      anim.SetBool("startRunAnim", true);
         //     // Debug.Log("Text: " );
 
         //     // if (Input.GetKeyUp(KeyCode.UpArrow))
         //     // {
-        //     //     anim.SetTrigger("playerRun");
+        //     //     anim.SetTrigger("startRunAnim");
         //     // }
         // }
+
+
+
         CheckInput();
     }
+
+    
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    // [SerializeField] float _speed = 500f;
+    // [SerializeField] float _jumpForce = 300f;
+
+    // Vector2 _movement;
+    
+    // void Awake() => rb = GetComponent<Rigidbody2D>();
+
+    // void FixedUpdate() => rb.AddForce(_movement * _speed * Time.deltaTime);
+
+    // // public void OnMove(InputValue value) => _movement = value.Get<Vector2>();
+    // // public void OnFire(InputValue value) => rb.AddForce(Vector2.up * _jumpForce);
+
+    // public void OnFire(InputValue value) 
+    // {
+    //     rb.AddForce(Vector2.up * _jumpForce);
+    // }
+
+    // public void OnMove(InputValue value) 
+    // {
+    //     _movement = value.Get<Vector2>();
+    // }
+
+    // // private void FixedUpdate()
+    // // {
+    // //     CheckGround(); //can move side to side but not jump
+    // //     SlopeCheck(); //on a hill will just keep sliding down
+    // //     ApplyMovement();
+    // // }
+    // }
+
