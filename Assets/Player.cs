@@ -35,7 +35,7 @@ public class Player : MonoBehaviour
 
     private bool canJump;
 
-    private int canDoubleJump = 0;
+    // private int canDoubleJump = 0;
 
     private float slopeSideAngle;
 
@@ -102,10 +102,11 @@ public class Player : MonoBehaviour
         //movement speed is always .07
         // Debug.Log("movementspeed: " + newVe);
         // anim.SetTrigger("playerRun");
-        //if not on slope
+        // if not on slope
+        
+
         if (isGrounded && !isOnSlope && !isJumping)
-        {
-            // Debug.Log("This one");
+        {                     
             newVelocity.Set(movementSpeed * xInput, 0.0f);
             rb.velocity = newVelocity;
             // Debug.Log("newVelocity: " + newVelocity);
@@ -232,7 +233,7 @@ public class Player : MonoBehaviour
     {
         // canDoubleJump++;
       
-        Debug.Log("canJump: " + canJump);
+        // Debug.Log("canJump: " + canJump);
 
         if (canJump)
         {
@@ -311,17 +312,17 @@ public class Player : MonoBehaviour
 
         xInput = Input.GetAxisRaw("Horizontal");
 
-        Debug.Log(xInput);
+        // Debug.Log(xInput);
 
 
 
         if(xInput != 0)
         {
-            Debug.Log("animation should be running now");
+            // Debug.Log("animation should be running now");
             anim.SetBool("startRunAnim", true);
         }
 
-        Debug.Log(movementSpeed);
+        // Debug.Log(movementSpeed);
 
         // if(movementSpeed > .05)
         // {
