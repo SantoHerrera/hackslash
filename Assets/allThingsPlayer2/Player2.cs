@@ -10,7 +10,7 @@ using UnityEngine.InputSystem;
 //make run animation only run once.
 //3
 //make animation stop coming in and out.
-public class Player : MonoBehaviour
+public class Player2 : MonoBehaviour
 {
     private Rigidbody2D rb;
 
@@ -62,7 +62,7 @@ public class Player : MonoBehaviour
     [SerializeField]
     private PhysicsMaterial2D fullFriction;
 
-    public Animator anim;
+    // public Animator anim;
 
     public KeyCode attack1;
 
@@ -76,14 +76,16 @@ public class Player : MonoBehaviour
     {
         rb = GetComponent<Rigidbody2D>();
 
-        anim = GetComponent<Animator>();
+        // anim = GetComponent<Animator>();
+
+        // m_Rigidbody = GetComponent<Rigidbody>();
+        //Stop the Rigidbody from rotating
+        rb.freezeRotation = true;
     }
 
     private void CheckGround()
     {
         isGrounded = Physics2D.OverlapCircle(groundcheck.position, groundCheckRadius, whatIsGround);
-
-    
 
         if (rb.velocity.y <= -0.0f)
         {
@@ -277,31 +279,60 @@ public class Player : MonoBehaviour
 
     private void CheckInput()
     {
-        xInput = Input.GetAxisRaw("Horizontal");
+        // xInput = Input.GetAxisRaw("Horizontal");
 
-        if (xInput == 1 && facingDirection == -1)
+        // if (xInput == 1 && facingDirection == -1)
+        // {
+        //     Flip();
+        // }
+        // else if (xInput == -1 && facingDirection == 1)
+        // {
+        //     Flip();
+        // }
+
+        if (Input.GetKey(KeyCode.LeftArrow))
         {
-            Flip();
-        }
-        else if (xInput == -1 && facingDirection == 1)
+            if (facingDirection != -1)
+            {
+                Flip();
+            }
+            xInput = -1;
+            // Flip();
+        }        
+
+        if (Input.GetKey(KeyCode.RightArrow))
         {
-            Flip();
+            if (facingDirection != 1)
+            {
+                Flip();
+            }
+            xInput = 1;
         }
 
-        if (Input.GetButtonDown("Jump"))
+        //  if (Input.GetKeyDown(KeyCode.RightArrow))
+        // {
+        //     Flip();
+        // }
+
+        if (Input.GetKeyDown("j"))
         {
             Jump();
         }
 
-        if (Input.GetKeyDown(KeyCode.UpArrow))
-        {
-            Jump();
-        }
+        // if (Input.GetButtonDown("Jump"))
+        // {
+        //     Jump();
+        // }
 
-        if (Input.GetKeyDown(KeyCode.W))
-        {
-            Jump();
-        }
+        // if (Input.GetKeyDown(KeyCode.UpArrow))
+        // {
+        //     Jump();
+        // }
+
+        // if (Input.GetKeyDown(KeyCode.W))
+        // {
+        //     Jump();
+        // }
     }
 
     void Update()
@@ -314,11 +345,11 @@ public class Player : MonoBehaviour
 
 
 
-        if (xInput != 0)
-        {
-            // Debug.Log("animation should be running now");
-            anim.SetBool("startRunAnim", true);
-        }
+        // if (xInput != 0)
+        // {
+        //     // Debug.Log("animation should be running now");
+        //     anim.SetBool("startRunAnim", true);
+        // }
 
         // Debug.Log(movementSpeed);
 
@@ -360,52 +391,3 @@ public class Player : MonoBehaviour
         CheckInput();
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// [SerializeField] float _speed = 500f;
-// [SerializeField] float _jumpForce = 300f;
-
-// Vector2 _movement;
-
-// void Awake() => rb = GetComponent<Rigidbody2D>();
-
-// void FixedUpdate() => rb.AddForce(_movement * _speed * Time.deltaTime);
-
-// // public void OnMove(InputValue value) => _movement = value.Get<Vector2>();
-// // public void OnFire(InputValue value) => rb.AddForce(Vector2.up * _jumpForce);
-
-// public void OnFire(InputValue value)
-// {
-//     rb.AddForce(Vector2.up * _jumpForce);
-// }
-
-// public void OnMove(InputValue value)
-// {
-//     _movement = value.Get<Vector2>();
-// }
-
-// // private void FixedUpdate()
-// // {
-// //     CheckGround(); //can move side to side but not jump
-// //     SlopeCheck(); //on a hill will just keep sliding down
-// //     ApplyMovement();
-// // }
-// }
