@@ -35,8 +35,6 @@ public class Player : MonoBehaviour
 
     private bool canJump;
 
-    // private int canDoubleJump = 0;
-
     private float slopeSideAngle;
 
     private float xInput;
@@ -288,16 +286,6 @@ public class Player : MonoBehaviour
             Flip();
         }
 
-        if (Input.GetButtonDown("Jump"))
-        {
-            Jump();
-        }
-
-        if (Input.GetKeyDown(KeyCode.UpArrow))
-        {
-            Jump();
-        }
-
         if (Input.GetKeyDown(KeyCode.W))
         {
             Jump();
@@ -379,33 +367,3 @@ public class Player : MonoBehaviour
 
 
 
-
-// [SerializeField] float _speed = 500f;
-// [SerializeField] float _jumpForce = 300f;
-
-// Vector2 _movement;
-
-// void Awake() => rb = GetComponent<Rigidbody2D>();
-
-// void FixedUpdate() => rb.AddForce(_movement * _speed * Time.deltaTime);
-
-// // public void OnMove(InputValue value) => _movement = value.Get<Vector2>();
-// // public void OnFire(InputValue value) => rb.AddForce(Vector2.up * _jumpForce);
-
-// public void OnFire(InputValue value)
-// {
-//     rb.AddForce(Vector2.up * _jumpForce);
-// }
-
-// public void OnMove(InputValue value)
-// {
-//     _movement = value.Get<Vector2>();
-// }
-
-// // private void FixedUpdate()
-// // {
-// //     CheckGround(); //can move side to side but not jump
-// //     SlopeCheck(); //on a hill will just keep sliding down
-// //     ApplyMovement();
-// // }
-// }

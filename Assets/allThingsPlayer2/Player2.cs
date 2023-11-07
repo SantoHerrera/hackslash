@@ -309,85 +309,25 @@ public class Player2 : MonoBehaviour
             xInput = 1;
         }
 
-        //  if (Input.GetKeyDown(KeyCode.RightArrow))
-        // {
-        //     Flip();
-        // }
-
         if (Input.GetKeyDown("j"))
         {
             Jump();
         }
 
-        // if (Input.GetButtonDown("Jump"))
-        // {
-        //     Jump();
-        // }
+        if (Input.GetKeyDown(KeyCode.UpArrow))
+        {
+            Jump();
+        }
 
-        // if (Input.GetKeyDown(KeyCode.UpArrow))
-        // {
-        //     Jump();
-        // }
+        if (Input.GetKeyUp(KeyCode.RightArrow) || Input.GetKeyUp(KeyCode.LeftArrow) )
+        {
+            xInput = 0;    
+        }
 
-        // if (Input.GetKeyDown(KeyCode.W))
-        // {
-        //     Jump();
-        // }
     }
 
     void Update()
     {
-        // transform.position = myPlay.position + myPos;
-
-        xInput = Input.GetAxisRaw("Horizontal");
-
-        // Debug.Log("Text: ");
-
-
-
-        // if (xInput != 0)
-        // {
-        //     // Debug.Log("animation should be running now");
-        //     anim.SetBool("startRunAnim", true);
-        // }
-
-        // Debug.Log(movementSpeed);
-
-        // if(movementSpeed > .05)
-        // {
-        //     Debug.Log("turn on isIdling and start idling animation");
-        // }
-
-
-        //  if(xInput == 0)
-        // {
-        //     anim.SetBool("startRunAnim", false);
-        //     Debug.Log("is this ever being called?");
-        //     anim.SetBool("isIdling", true);
-        // }
-
-
-        // anim.SetBool("startRunAnim", false);
-
-        // if (Input.GetKeyDown(KeyCode.UpArrow))input
-        // if (Input.GetButton("ightArrow"))
-        // {
-
-        //     Debug.Log("this hoe working as im jumping");
-
-        //     // anim.SetTrigger("startRunAnim");
-
-        //      anim.SetBool("startRunAnim", true);
-        //     // Debug.Log("Text: " );
-
-        //     // if (Input.GetKeyUp(KeyCode.UpArrow))
-        //     // {
-        //     //     anim.SetTrigger("startRunAnim");
-        //     // }
-        // }
-
-
-
         CheckInput();
     }
 }
