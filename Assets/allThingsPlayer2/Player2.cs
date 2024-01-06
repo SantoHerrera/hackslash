@@ -98,12 +98,12 @@ public class Player2 : MonoBehaviour
         }
     }
 
-    void OnDrawGizmosSelected()
-    {
-        // Draw a yellow sphere at the transform's position
-        Gizmos.color = Color.yellow;
-        Gizmos.DrawSphere(groundcheck.position, groundCheckRadius);
-    }
+    // void OnDrawGizmosSelected()
+    // {
+    //     // Draw a yellow sphere at the transform's position
+    //     Gizmos.color = Color.yellow;
+    //     Gizmos.DrawSphere(groundcheck.position, groundCheckRadius);
+    // }
 
     private void ApplyMovement()
     {
@@ -214,14 +214,6 @@ public class Player2 : MonoBehaviour
             canWalkOnSlope = true;
         }
 
-        if (isOnSlope && canWalkOnSlope && xInput == 0.0f)
-        {
-            rb.sharedMaterial = fullFriction;
-        }
-        else
-        {
-            rb.sharedMaterial = noFriction;
-        }
     }
 
     private void FixedUpdate()
@@ -253,43 +245,12 @@ public class Player2 : MonoBehaviour
             rb.AddForce(newForce, ForceMode2D.Impulse);
         }
 
-        // if(canDoubleJump < 10)
-        // {
-        //     canJump = false;
-        //     isJumping = true;
-        //     newVelocity.Set(0.0f, 0.0f);
-        //     rb.velocity = newVelocity;
-        //     newForce.Set(0.0f, jumpForce);
-        //     rb.AddForce(newForce, ForceMode2D.Impulse);
-
-        // }
-
-        //original
-        // if (canJump)
-        // {
-
-        //     canJump = false;
-        //     isJumping = true;
-        //     newVelocity.Set(0.0f, 0.0f);
-        //     rb.velocity = newVelocity;
-        //     newForce.Set(0.0f, jumpForce);
-        //     rb.AddForce(newForce, ForceMode2D.Impulse);
-        // }
+   
     }
 
     private void CheckInput()
     {
-        // xInput = Input.GetAxisRaw("Horizontal");
-
-        // if (xInput == 1 && facingDirection == -1)
-        // {
-        //     Flip();
-        // }
-        // else if (xInput == -1 && facingDirection == 1)
-        // {
-        //     Flip();
-        // }
-
+ 
         if (Input.GetKey(KeyCode.LeftArrow))
         {
             if (facingDirection != -1)

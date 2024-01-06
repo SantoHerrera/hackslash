@@ -70,11 +70,20 @@ public class Player : MonoBehaviour
 
     public LayerMask whatIsGround;
 
+    public int maxHealth = 100;
+    public int currentHealth;
+
+    public HealthBar healthbar;
+
     private void Start()
     {
         rb = GetComponent<Rigidbody2D>();
 
         anim = GetComponent<Animator>();
+
+        currentHealth = maxHealth;
+
+        healthbar.SetMaxHealth(maxHealth);
     }
 
     private void CheckGround()
@@ -94,12 +103,7 @@ public class Player : MonoBehaviour
         }
     }
 
-    void OnDrawGizmosSelected()
-    {
-        // Draw a yellow sphere at the transform's position
-        Gizmos.color = Color.yellow;
-        Gizmos.DrawSphere(groundcheck.position, groundCheckRadius);
-    }
+                 
 
     private void ApplyMovement()
     {
@@ -210,14 +214,6 @@ public class Player : MonoBehaviour
             canWalkOnSlope = true;
         }
 
-        if (isOnSlope && canWalkOnSlope && xInput == 0.0f)
-        {
-            rb.sharedMaterial = fullFriction;
-        }
-        else
-        {
-            rb.sharedMaterial = noFriction;
-        }
     }
 
     private void FixedUpdate()
@@ -235,9 +231,6 @@ public class Player : MonoBehaviour
 
     private void Jump()
     {
-        // canDoubleJump++;
-
-        // Debug.Log("canJump: " + canJump);
 
         if (canJump)
         {
@@ -248,29 +241,6 @@ public class Player : MonoBehaviour
             newForce.Set(0.0f, jumpForce);
             rb.AddForce(newForce, ForceMode2D.Impulse);
         }
-
-        // if(canDoubleJump < 10)
-        // {
-        //     canJump = false;
-        //     isJumping = true;
-        //     newVelocity.Set(0.0f, 0.0f);
-        //     rb.velocity = newVelocity;
-        //     newForce.Set(0.0f, jumpForce);
-        //     rb.AddForce(newForce, ForceMode2D.Impulse);
-
-        // }
-
-        //original
-        // if (canJump)
-        // {
-
-        //     canJump = false;
-        //     isJumping = true;
-        //     newVelocity.Set(0.0f, 0.0f);
-        //     rb.velocity = newVelocity;
-        //     newForce.Set(0.0f, jumpForce);
-        //     rb.AddForce(newForce, ForceMode2D.Impulse);
-        // }
     }
 
     private void CheckInput()
@@ -292,6 +262,13 @@ public class Player : MonoBehaviour
         }
     }
 
+    void TakeDamage(int damage)
+    {
+        currentHealth -= damage;
+
+        healthbar.SetHealth(currentHealth);
+    }
+
     void Update()
     {
         // transform.position = myPlay.position + myPos;
@@ -306,6 +283,11 @@ public class Player : MonoBehaviour
         {
             // Debug.Log("animation should be running now");
             anim.SetBool("startRunAnim", true);
+        }
+
+        if(Input.GetKeyDown("c"))
+        {
+            TakeDamage(20);
         }
 
         // Debug.Log(movementSpeed);
