@@ -62,7 +62,7 @@ public class Player2 : MonoBehaviour
     [SerializeField]
     private PhysicsMaterial2D fullFriction;
 
-    // public Animator anim;
+    public Animator anim;
 
     public KeyCode attack1;
 
@@ -248,21 +248,29 @@ public class Player2 : MonoBehaviour
    
     }
 
+    private void startAnim()
+    {
+        anim.SetBool("startRunAnim", true);
+    }
+
     private void CheckInput()
     {
  
         if (Input.GetKey(KeyCode.LeftArrow))
         {
+            // startAnim();
             if (facingDirection != -1)
             {
                 Flip();
             }
             xInput = -1;
             // Flip();
+            
         }        
 
         if (Input.GetKey(KeyCode.RightArrow))
         {
+            // startAnim();
             if (facingDirection != 1)
             {
                 Flip();
