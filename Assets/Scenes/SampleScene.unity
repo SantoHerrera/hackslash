@@ -1154,6 +1154,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxHealth: 100
   healthBar: {fileID: 1017181863}
+  animators: {fileID: 1634507725}
 --- !u!95 &1634507725
 Animator:
   serializedVersion: 4

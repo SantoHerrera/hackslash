@@ -9,6 +9,7 @@ public class Player2Health : MonoBehaviour
     public int maxHealth = 100;
     int currentHealth;
     public HealthBar healthBar;
+    public Animator animators;
     // HealthBar player1 = new HealthBar();
 
     // Start is called before the first frame update
@@ -25,7 +26,11 @@ public class Player2Health : MonoBehaviour
         if (currentHealth <= 0)
         {
             Die();
+            animators.SetTrigger("hasDiedTrigger");
+            // return;
+
         }
+        
 
         Debug.Log("Player2 Heatlh " + currentHealth);
         healthBar.SetHealth(currentHealth);
@@ -35,6 +40,11 @@ public class Player2Health : MonoBehaviour
     {
         //die animation
         Debug.Log("enemy died!");
+    }
+
+    public bool HasHealth()
+    {
+        return currentHealth > 0;
     }
     
 }

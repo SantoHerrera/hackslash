@@ -16,12 +16,13 @@ public class PlayerHealth : MonoBehaviour
     
     public void TakeDamage(int damage)
     {
-        currentHealth -= damage;
 
         if(currentHealth <= 0)
         {
             Die();
+            return;
         }
+        currentHealth -= damage;
 
         Debug.Log("Player1 Heatlh " + currentHealth);
         healthBar.SetHealth(currentHealth);
@@ -30,6 +31,11 @@ public class PlayerHealth : MonoBehaviour
     void Die()
     {
         Debug.Log("enemy died!");
+    }
+
+    public bool HasHealth()
+    {
+        return currentHealth > 0;
     }
 
     // void Update()

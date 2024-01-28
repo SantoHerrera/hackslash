@@ -37,7 +37,9 @@ public class Player2Combat : MonoBehaviour
         {
             enemy.GetComponent<PlayerHealth>().TakeDamage(attackDamage);
             Debug.Log("Attcking player1");
-            // Debug.Log(enemy.GetComponent<PlayerHealth>().currentHealth);
+            enemy.GetComponent<PlayerHealth>().HasHealth();
+
+            Debug.Log("works " + enemy.GetComponent<PlayerHealth>().HasHealth());
 
             
         }
