@@ -2,7 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Player2Combat : MonoBehaviour
+//tricky tricky
+public class Player1Combat : MonoBehaviour
 {
 
     public Animator animator;
@@ -13,15 +14,15 @@ public class Player2Combat : MonoBehaviour
     public float attackRange = 0.5f;
     public int attackDamage = 20;
 
+   
 
     // Update is called once per frame
     void Update()
     {
-        if(Input.GetKeyDown(KeyCode.M))
+        if(Input.GetKeyDown(KeyCode.R))
         {
             Attack();
         }
-        
     }
 
     void Attack()
@@ -35,13 +36,9 @@ public class Player2Combat : MonoBehaviour
         //damage them
         foreach(Collider2D enemy in hitEnemies)
         {
-            enemy.GetComponent<Player1Health>().TakeDamage(attackDamage);
-            Debug.Log("Attcking player1");
-            enemy.GetComponent<Player1Health>().HasHealth();
-
-            Debug.Log("works " + enemy.GetComponent<Player1Health>().HasHealth());
-
-            
+            enemy.GetComponent<Player2Health>().TakeDamage(attackDamage);
+            Debug.Log("Attcking player2");
+            // Debug.Log(enemy.GetComponent<Player2Health>().currentHealth);
         }
     }
 
@@ -52,6 +49,4 @@ public class Player2Combat : MonoBehaviour
 
         Gizmos.DrawWireSphere(attackPoint.position, attackRange);
     }
-
-
 }
