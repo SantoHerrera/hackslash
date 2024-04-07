@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 // using UnityEngine;
 using UnityEngine.InputSystem;
+using System.Linq;
 
 //1
 //https://awesometuts.com/blog/unity-vectors/
@@ -25,6 +26,7 @@ public class Player2 : MonoBehaviour
 
     private Vector2 slopeNormalPerp;
 
+    bool[] playerNotActive = new bool[4];
     private bool isGrounded;
 
     private bool isOnSlope;
@@ -107,29 +109,17 @@ public class Player2 : MonoBehaviour
 
     private void ApplyMovement()
     {
-        //movement speed is always .07
-        // Debug.Log("movementspeed: " + newVe);
-        // anim.SetTrigger("playerRun");
-        // if not on slope
-
+        if (isPlayerNotActive() && isGrounded)
+        {
+            logPlayerNotActiveArray();
+            rb.Sleep();
+        }
 
         if (isGrounded && !isOnSlope && !isJumping)
         {
             newVelocity.Set(movementSpeed * xInput, 0.0f);
             rb.velocity = newVelocity;
-            // Debug.Log("newVelocity: " + newVelocity);
         }
-        //If on slope
-        else if (isGrounded && isOnSlope && canWalkOnSlope && !isJumping)
-        {
-            newVelocity.Set(
-                movementSpeed * slopeNormalPerp.x * -xInput,
-                movementSpeed * slopeNormalPerp.y * -xInput
-            );
-            rb.velocity = newVelocity;
-        }
-        //If in air
-
         else if (!isGrounded)
         {
             newVelocity.Set(movementSpeed * xInput, rb.velocity.y);
@@ -213,7 +203,6 @@ public class Player2 : MonoBehaviour
         {
             canWalkOnSlope = true;
         }
-
     }
 
     private void FixedUpdate()
@@ -244,8 +233,6 @@ public class Player2 : MonoBehaviour
             newForce.Set(0.0f, jumpForce);
             rb.AddForce(newForce, ForceMode2D.Impulse);
         }
-
-   
     }
 
     private void startAnim()
@@ -253,11 +240,38 @@ public class Player2 : MonoBehaviour
         anim.SetBool("startRunAnim", true);
     }
 
+    private void logPlayerNotActiveArray()
+    {
+        string result = "bools list: ";
+
+        foreach (var item in playerNotActive)
+        {
+            result += item.ToString() + ", ";
+        }
+
+        Debug.Log(result);
+        Debug.Log("isPlayerNotActive " + isPlayerNotActive());
+    }
+
+    // bool playerISIactive = allInarrayFalse
+
+    // private void allInArrayFalse()
+    // {
+    //     bool result = playerNotActive.All(x => x == false);
+    //     Debug.Log("AllInArrayFalse: " + result);
+    // }
+
+    private bool isPlayerNotActive()
+    {
+        bool result = playerNotActive.All(x => x == false);
+        return result;
+    }
+
     private void CheckInput()
     {
- 
         if (Input.GetKey(KeyCode.LeftArrow))
         {
+            playerNotActive[2] = true;
             // startAnim();
             if (facingDirection != -1)
             {
@@ -265,11 +279,15 @@ public class Player2 : MonoBehaviour
             }
             xInput = -1;
             // Flip();
-            
-        }        
+        }
+        else
+        {
+            playerNotActive[2] = false;
+        }
 
         if (Input.GetKey(KeyCode.RightArrow))
         {
+            playerNotActive[3] = true;
             // startAnim();
             if (facingDirection != 1)
             {
@@ -277,22 +295,32 @@ public class Player2 : MonoBehaviour
             }
             xInput = 1;
         }
+        else
+        {
+            playerNotActive[3] = false;
+        }
 
-        if (Input.GetKeyDown("j"))
+        if (Input.GetKey("j"))
         {
             Jump();
+            logPlayerNotActiveArray();
         }
 
-        if (Input.GetKeyDown(KeyCode.UpArrow))
+        if (Input.GetKey(KeyCode.UpArrow))
         {
             Jump();
+            playerNotActive[1] = true;
         }
-
-        if (Input.GetKeyUp(KeyCode.RightArrow) || Input.GetKeyUp(KeyCode.LeftArrow) )
+        else
         {
-            xInput = 0;    
+            playerNotActive[1] = false;
         }
 
+        if (Input.GetKeyUp(KeyCode.RightArrow) || Input.GetKeyUp(KeyCode.LeftArrow))
+        {
+            xInput = 0;
+            // logPlayerNotActiveArray();
+        }
     }
 
     void Update()

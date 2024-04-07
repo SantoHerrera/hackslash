@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 // using UnityEngine;
 using UnityEngine.InputSystem;
+using System.Linq;
 
 //1
 //https://awesometuts.com/blog/unity-vectors/
@@ -25,6 +26,7 @@ public class Player1 : MonoBehaviour
 
     private Vector2 slopeNormalPerp;
 
+    bool[] playerNotActive = new bool[4];
     private bool isGrounded;
 
     private bool isOnSlope;
@@ -92,8 +94,6 @@ public class Player1 : MonoBehaviour
     {
         isGrounded = Physics2D.OverlapCircle(groundcheck.position, groundCheckRadius, whatIsGround);
 
-    
-
         if (rb.velocity.y <= -0.0f)
         {
             isJumping = false;
@@ -105,7 +105,11 @@ public class Player1 : MonoBehaviour
         }
     }
 
-                 
+    private bool isPlayerNotActive()
+    {
+        bool result = playerNotActive.All(x => x == false);
+        return result;
+    }
 
     private void ApplyMovement()
     {
@@ -113,7 +117,10 @@ public class Player1 : MonoBehaviour
         // Debug.Log("movementspeed: " + newVe);
         // anim.SetTrigger("playerRun");
         // if not on slope
-
+        if (isPlayerNotActive() && isGrounded)
+        {
+            rb.Sleep();
+        }
 
         if (isGrounded && !isOnSlope && !isJumping)
         {
@@ -121,22 +128,27 @@ public class Player1 : MonoBehaviour
             rb.velocity = newVelocity;
             // Debug.Log("newVelocity: " + newVelocity);
         }
-        //If on slope
-        else if (isGrounded && isOnSlope && canWalkOnSlope && !isJumping)
-        {
-            newVelocity.Set(
-                movementSpeed * slopeNormalPerp.x * -xInput,
-                movementSpeed * slopeNormalPerp.y * -xInput
-            );
-            rb.velocity = newVelocity;
-        }
-        //If in air
-
         else if (!isGrounded)
         {
             newVelocity.Set(movementSpeed * xInput, rb.velocity.y);
             rb.velocity = newVelocity;
         }
+        // //If on slope
+        // else if (isGrounded && isOnSlope && canWalkOnSlope && !isJumping)
+        // {
+        //     newVelocity.Set(
+        //         movementSpeed * slopeNormalPerp.x * -xInput,
+        //         movementSpeed * slopeNormalPerp.y * -xInput
+        //     );
+        //     rb.velocity = newVelocity;
+        // }
+        // //If in air
+
+        // else if (!isGrounded)
+        // {
+        //     newVelocity.Set(movementSpeed * xInput, rb.velocity.y);
+        //     rb.velocity = newVelocity;
+        // }
     }
 
     private void SlopeCheck()
@@ -215,7 +227,6 @@ public class Player1 : MonoBehaviour
         {
             canWalkOnSlope = true;
         }
-
     }
 
     private void FixedUpdate()
@@ -233,7 +244,6 @@ public class Player1 : MonoBehaviour
 
     private void Jump()
     {
-
         if (canJump)
         {
             canJump = false;
@@ -245,22 +255,98 @@ public class Player1 : MonoBehaviour
         }
     }
 
+    private void logPlayerNotActiveArray()
+    {
+        string result = "bools list: ";
+
+        foreach (var item in playerNotActive)
+        {
+            result += item.ToString() + ", ";
+        }
+
+        Debug.Log(result);
+        Debug.Log("isPlayerNotActive " + isPlayerNotActive());
+    }
+
     private void CheckInput()
     {
-        xInput = Input.GetAxisRaw("Horizontal");
+        // xInput = Input.GetAxisRaw("Horizontal");
 
-        if (xInput == 1 && facingDirection == -1)
+        // if (xInput == 1 && facingDirection == -1)
+        // {
+        //     Flip();
+        //     playerNotActive[2] = true;
+        // }
+        // else if (xInput == -1 && facingDirection == 1)
+        // {
+        //     Flip();
+        //     playerNotActive[3] = true;
+        // }
+
+        // if (Input.GetKeyDown(KeyCode.W))
+        // {
+        //     Jump();
+        //     playerNotActive[1] = true;
+        // }
+        // else
+        // {
+        //     playerNotActive[1] = false;
+        // }
+
+
+
+
+        if (Input.GetKey("a"))
         {
-            Flip();
+            playerNotActive[2] = true;
+            // startAnim();
+            if (facingDirection != -1)
+            {
+                Flip();
+            }
+            xInput = -1;
+            // Flip();
         }
-        else if (xInput == -1 && facingDirection == 1)
+        else
         {
-            Flip();
+            playerNotActive[2] = false;
         }
 
-        if (Input.GetKeyDown(KeyCode.W))
+        if (Input.GetKey("d"))
+        {
+            playerNotActive[3] = true;
+            // startAnim();
+            if (facingDirection != 1)
+            {
+                Flip();
+            }
+            xInput = 1;
+        }
+        else
+        {
+            playerNotActive[3] = false;
+        }
+
+        if (Input.GetKey("w"))
         {
             Jump();
+            logPlayerNotActiveArray();
+        }
+
+        if (Input.GetKey("w"))
+        {
+            Jump();
+            playerNotActive[1] = true;
+        }
+        else
+        {
+            playerNotActive[1] = false;
+        }
+
+        if (Input.GetKeyUp("a") || Input.GetKeyUp("d"))
+        {
+            xInput = 0;
+            logPlayerNotActiveArray();
         }
     }
 
@@ -287,7 +373,7 @@ public class Player1 : MonoBehaviour
         //     anim.SetBool("startRunAnim", true);
         // }
 
-        if(Input.GetKeyDown("c"))
+        if (Input.GetKeyDown("c"))
         {
             TakeDamage(20);
         }
@@ -332,5 +418,3 @@ public class Player1 : MonoBehaviour
         CheckInput();
     }
 }
-
-

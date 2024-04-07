@@ -14,19 +14,48 @@ public class Player1Combat : MonoBehaviour
     public float attackRange = 0.5f;
     public int attackDamage = 20;
 
-   
+   void Start()
+    {
+        //Get the Animator, which you attach to the GameObject you intend to animate.
+        animator = gameObject.GetComponent<Animator>();
+        //The current speed of the first Animator state
+        // m_CurrentSpeed = m_Animator.GetCurrentAnimatorStateInfo(0);
+    }
 
     // Update is called once per frame
     void Update()
     {
-        if(Input.GetKeyDown(KeyCode.R))
+        if(!animator.GetCurrentAnimatorStateInfo(0).IsName("Attack"))   
         {
-            Attack();
+            // Debug.Log(animator.GetCurrentAnimatorStateInfo(0).IsName("Attack")));
+            if(Input.GetKeyDown(KeyCode.R))
+            {
+                Debug.Log("before: " + animator.GetCurrentAnimatorStateInfo(0).IsName("Attack"));
+                Attack();
+                Debug.Log("after: " + animator.GetCurrentAnimatorStateInfo(0).IsName("Attack"));  
+                // //to avoid punching spam
+                // if(animator.GetCurrentAnimatorStateInfo(0).IsName("Attack"))
+                // {
+                //     return;
+                // }
+                // Attack();
+                // Debug.Log("anim state: " + animator.GetCurrentAnimatorStateInfo(0).IsName("Attack"));
+            }
         }
     }
 
     void Attack()
     {
+
+         //to avoid punching spam
+            // if(animator.GetCurrentAnimatorStateInfo(0).IsName("Attack"))
+            // {
+            //     return;
+            // }
+            // else {
+            //     animator.SetTrigger("Attack");
+            // }
+            // Attack();
         //play an attack annimation
         animator.SetTrigger("Attack");
         //detect enemies in range of attack
