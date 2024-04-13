@@ -1,53 +1,37 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-// using UnityEngine;
 using UnityEngine.InputSystem;
 using System.Linq;
 
-//1
-//https://awesometuts.com/blog/unity-vectors/
-//2
-//make run animation only run once.
-//3
-//make animation stop coming in and out.
+//todo
+//make run animation run
 public class Player2 : MonoBehaviour
 {
+    public Animator anim;
+    public Transform groundcheck;
+    public LayerMask whatIsGround;
+
     private Rigidbody2D rb;
 
-    private CapsuleCollider2D cc;
-
-    [SerializeField]
-    private float jumpForce;
-
     private Vector2 newVelocity;
-
     private Vector2 newForce;
-
     private Vector2 slopeNormalPerp;
 
     bool[] playerNotActive = new bool[4];
+
     private bool isGrounded;
-
     private bool isOnSlope;
-
-    private bool canWalkOnSlope;
-
     private bool isJumping;
-
     private bool canJump;
 
-    // private int canDoubleJump = 0;
-
-    private float slopeSideAngle;
-
-    private float xInput;
-
-    private float slopeDownAngle;
-
-    private float lastSlopeAngle;
-
     private int facingDirection = 1;
+
+    public float groundCheckRadius;
+    private float slopeSideAngle;
+    private float xInput;
+    private float slopeDownAngle;
+    private float lastSlopeAngle;
 
     [SerializeField]
     private float movementSpeed;
@@ -59,80 +43,69 @@ public class Player2 : MonoBehaviour
     private float maxSlopeAngle;
 
     [SerializeField]
+    private float jumpForce;
+
+    [SerializeField]
     private PhysicsMaterial2D noFriction;
 
     [SerializeField]
     private PhysicsMaterial2D fullFriction;
 
-    public Animator anim;
-
-    public KeyCode attack1;
-
-    public Transform groundcheck;
-
-    public float groundCheckRadius;
-
-    public LayerMask whatIsGround;
-
     private void Start()
     {
         rb = GetComponent<Rigidbody2D>();
 
-        // anim = GetComponent<Animator>();
-
-        // m_Rigidbody = GetComponent<Rigidbody>();
         //Stop the Rigidbody from rotating
         rb.freezeRotation = true;
     }
 
-    private void CheckGround()
+    private void startAnim()
     {
-        isGrounded = Physics2D.OverlapCircle(groundcheck.position, groundCheckRadius, whatIsGround);
-
-        if (rb.velocity.y <= -0.0f)
-        {
-            isJumping = false;
-        }
-
-        if (isGrounded && !isJumping && slopeDownAngle <= maxSlopeAngle)
-        {
-            canJump = true;
-        }
+        anim.SetBool("startRunAnim", true);
     }
 
-    // void OnDrawGizmosSelected()
-    // {
-    //     // Draw a yellow sphere at the transform's position
-    //     Gizmos.color = Color.yellow;
-    //     Gizmos.DrawSphere(groundcheck.position, groundCheckRadius);
-    // }
-
-    private void ApplyMovement()
+    private void logPlayerNotActiveArray()
     {
-        if (isPlayerNotActive() && isGrounded)
-        {
-            logPlayerNotActiveArray();
-            rb.Sleep();
-        }
+        string result = "bools list: ";
 
-        if (isGrounded && !isOnSlope && !isJumping)
+        foreach (var item in playerNotActive)
         {
-            newVelocity.Set(movementSpeed * xInput, 0.0f);
-            rb.velocity = newVelocity;
+            result += item.ToString() + ", ";
         }
-        else if (!isGrounded)
-        {
-            newVelocity.Set(movementSpeed * xInput, rb.velocity.y);
-            rb.velocity = newVelocity;
-        }
+        
+        Debug.Log(result);
     }
 
-    private void SlopeCheck()
+    private bool noHumanInput()
     {
-        Vector2 checkPos = -transform.position;
+        return playerNotActive.All(x => x == false);
+    }
 
-        SlopeCheckHorizontal(checkPos);
-        SlopeCheckVertical(checkPos);
+    private void SlopeCheckVertical(Vector2 checkPos)
+    {
+        RaycastHit2D hit = Physics2D.Raycast(
+            checkPos,
+            Vector2.down,
+            slopeCheckDistance,
+            whatIsGround
+        );
+
+        if (hit)
+        {
+            slopeNormalPerp = Vector2.Perpendicular(hit.normal).normalized;
+
+            slopeDownAngle = Vector2.Angle(hit.normal, Vector2.up);
+
+            if (slopeDownAngle != lastSlopeAngle)
+            {
+                isOnSlope = true;
+            }
+
+            lastSlopeAngle = slopeDownAngle;
+
+            Debug.DrawRay(hit.point, slopeNormalPerp, Color.blue);
+            Debug.DrawRay(hit.point, hit.normal, Color.green);
+        }
     }
 
     private void SlopeCheckHorizontal(Vector2 checkPos)
@@ -169,39 +142,46 @@ public class Player2 : MonoBehaviour
         }
     }
 
-    private void SlopeCheckVertical(Vector2 checkPos)
+    private void ApplyMovement()
     {
-        RaycastHit2D hit = Physics2D.Raycast(
-            checkPos,
-            Vector2.down,
-            slopeCheckDistance,
-            whatIsGround
-        );
-
-        if (hit)
+        if (noHumanInput() && isGrounded)
         {
-            slopeNormalPerp = Vector2.Perpendicular(hit.normal).normalized;
-
-            slopeDownAngle = Vector2.Angle(hit.normal, Vector2.up);
-
-            if (slopeDownAngle != lastSlopeAngle)
-            {
-                isOnSlope = true;
-            }
-
-            lastSlopeAngle = slopeDownAngle;
-
-            Debug.DrawRay(hit.point, slopeNormalPerp, Color.blue);
-            Debug.DrawRay(hit.point, hit.normal, Color.green);
+            rb.Sleep();
         }
 
-        if (slopeDownAngle > maxSlopeAngle || slopeSideAngle > maxSlopeAngle)
+        if (isGrounded && !isOnSlope && !isJumping)
         {
-            canWalkOnSlope = false;
+            newVelocity.Set(movementSpeed * xInput, 0.0f);
+            rb.velocity = newVelocity;
         }
-        else
+        //makes it so you can glide while mid air ----otherwise jumping while moving sideways would be straight up and down, then once grounded countinue moving sideways
+        else if (!isGrounded)
         {
-            canWalkOnSlope = true;
+            newVelocity.Set(movementSpeed * xInput, rb.velocity.y);
+            rb.velocity = newVelocity;
+        }
+    }
+
+    private void SlopeCheck()
+    {
+        Vector2 checkPos = -transform.position;
+
+        SlopeCheckHorizontal(checkPos);
+        SlopeCheckVertical(checkPos);
+    }
+
+    private void CheckGround()
+    {
+        isGrounded = Physics2D.OverlapCircle(groundcheck.position, groundCheckRadius, whatIsGround);
+
+        if (rb.velocity.y <= -0.0f)
+        {
+            isJumping = false;
+        }
+
+        if (isGrounded && !isJumping && slopeDownAngle <= maxSlopeAngle)
+        {
+            canJump = true;
         }
     }
 
@@ -212,18 +192,8 @@ public class Player2 : MonoBehaviour
         ApplyMovement();
     }
 
-    private void Flip()
-    {
-        facingDirection *= -1;
-        transform.Rotate(0.0f, 180.0f, 0.0f);
-    }
-
     private void Jump()
     {
-        // canDoubleJump++;
-
-        // Debug.Log("canJump: " + canJump);
-
         if (canJump)
         {
             canJump = false;
@@ -235,36 +205,10 @@ public class Player2 : MonoBehaviour
         }
     }
 
-    private void startAnim()
+    private void Flip()
     {
-        anim.SetBool("startRunAnim", true);
-    }
-
-    private void logPlayerNotActiveArray()
-    {
-        string result = "bools list: ";
-
-        foreach (var item in playerNotActive)
-        {
-            result += item.ToString() + ", ";
-        }
-
-        Debug.Log(result);
-        Debug.Log("isPlayerNotActive " + isPlayerNotActive());
-    }
-
-    // bool playerISIactive = allInarrayFalse
-
-    // private void allInArrayFalse()
-    // {
-    //     bool result = playerNotActive.All(x => x == false);
-    //     Debug.Log("AllInArrayFalse: " + result);
-    // }
-
-    private bool isPlayerNotActive()
-    {
-        bool result = playerNotActive.All(x => x == false);
-        return result;
+        facingDirection *= -1;
+        transform.Rotate(0.0f, 180.0f, 0.0f);
     }
 
     private void CheckInput()
@@ -272,13 +216,11 @@ public class Player2 : MonoBehaviour
         if (Input.GetKey(KeyCode.LeftArrow))
         {
             playerNotActive[2] = true;
-            // startAnim();
             if (facingDirection != -1)
             {
                 Flip();
             }
             xInput = -1;
-            // Flip();
         }
         else
         {
@@ -288,7 +230,6 @@ public class Player2 : MonoBehaviour
         if (Input.GetKey(KeyCode.RightArrow))
         {
             playerNotActive[3] = true;
-            // startAnim();
             if (facingDirection != 1)
             {
                 Flip();
@@ -300,10 +241,14 @@ public class Player2 : MonoBehaviour
             playerNotActive[3] = false;
         }
 
+        if (Input.GetKeyUp(KeyCode.RightArrow) || Input.GetKeyUp(KeyCode.LeftArrow))
+        {
+            xInput = 0;
+        }
+
         if (Input.GetKey("j"))
         {
             Jump();
-            logPlayerNotActiveArray();
         }
 
         if (Input.GetKey(KeyCode.UpArrow))
@@ -314,12 +259,6 @@ public class Player2 : MonoBehaviour
         else
         {
             playerNotActive[1] = false;
-        }
-
-        if (Input.GetKeyUp(KeyCode.RightArrow) || Input.GetKeyUp(KeyCode.LeftArrow))
-        {
-            xInput = 0;
-            // logPlayerNotActiveArray();
         }
     }
 
