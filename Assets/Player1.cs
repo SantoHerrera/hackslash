@@ -1,9 +1,9 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-// using UnityEngine;
 using UnityEngine.InputSystem;
 using System.Linq;
+using UnityEngine.SceneManagement;
 
 //1
 //https://awesometuts.com/blog/unity-vectors/
@@ -13,38 +13,39 @@ using System.Linq;
 //make animation stop coming in and out.
 public class Player1 : MonoBehaviour
 {
+    public Animator anim;
+    public KeyCode attack1;
+    public Transform groundcheck;
+    public LayerMask whatIsGround;
+    public HealthBar healthbar;
+    public GameObject Canvas1;
+    public BoxCollider2D CastleDoor;
+    public Transform canvas;
+
     private Rigidbody2D rb;
 
-    private CapsuleCollider2D cc;
-
-    [SerializeField]
-    private float jumpForce;
-
     private Vector2 newVelocity;
-
     private Vector2 newForce;
-
     private Vector2 slopeNormalPerp;
 
     bool[] playerNotActive = new bool[4];
-    private bool isGrounded;
 
+    private CapsuleCollider2D cc;
+
+    private bool isGrounded;
     private bool isOnSlope;
 
-    private bool canWalkOnSlope;
-
     private bool isJumping;
-
     private bool canJump;
 
+    public float groundCheckRadius;
     private float slopeSideAngle;
-
     private float xInput;
-
     private float slopeDownAngle;
-
     private float lastSlopeAngle;
 
+    public int maxHealth = 100;
+    public int currentHealth;
     private int facingDirection = 1;
 
     [SerializeField]
@@ -62,30 +63,12 @@ public class Player1 : MonoBehaviour
     [SerializeField]
     private PhysicsMaterial2D fullFriction;
 
-    public Animator anim;
-
-    public KeyCode attack1;
-
-    public Transform groundcheck;
-
-    public float groundCheckRadius;
-
-    public LayerMask whatIsGround;
-
-    public int maxHealth = 100;
-    public int currentHealth;
-
-    public HealthBar healthbar;
+    [SerializeField]
+    private float jumpForce;
 
     private void Start()
     {
         rb = GetComponent<Rigidbody2D>();
-
-        // anim = GetComponent<Animator>();
-
-        // currentHealth = maxHealth;
-
-        // healthbar.SetMaxHealth(maxHealth);
 
         rb.freezeRotation = true;
     }
@@ -105,6 +88,19 @@ public class Player1 : MonoBehaviour
         }
     }
 
+    private void logPlayerNotActiveArray()
+    {
+        string result = "bools list: ";
+
+        foreach (var item in playerNotActive)
+        {
+            result += item.ToString() + ", ";
+        }
+
+        Debug.Log(result);
+        Debug.Log("isPlayerNotActive " + isPlayerNotActive());
+    }
+
     private bool isPlayerNotActive()
     {
         bool result = playerNotActive.All(x => x == false);
@@ -113,42 +109,20 @@ public class Player1 : MonoBehaviour
 
     private void ApplyMovement()
     {
-        //movement speed is always .07
-        // Debug.Log("movementspeed: " + newVe);
-        // anim.SetTrigger("playerRun");
-        // if not on slope
         if (isPlayerNotActive() && isGrounded)
         {
             rb.Sleep();
         }
-
         if (isGrounded && !isOnSlope && !isJumping)
         {
             newVelocity.Set(movementSpeed * xInput, 0.0f);
             rb.velocity = newVelocity;
-            // Debug.Log("newVelocity: " + newVelocity);
         }
         else if (!isGrounded)
         {
             newVelocity.Set(movementSpeed * xInput, rb.velocity.y);
             rb.velocity = newVelocity;
         }
-        // //If on slope
-        // else if (isGrounded && isOnSlope && canWalkOnSlope && !isJumping)
-        // {
-        //     newVelocity.Set(
-        //         movementSpeed * slopeNormalPerp.x * -xInput,
-        //         movementSpeed * slopeNormalPerp.y * -xInput
-        //     );
-        //     rb.velocity = newVelocity;
-        // }
-        // //If in air
-
-        // else if (!isGrounded)
-        // {
-        //     newVelocity.Set(movementSpeed * xInput, rb.velocity.y);
-        //     rb.velocity = newVelocity;
-        // }
     }
 
     private void SlopeCheck()
@@ -218,15 +192,6 @@ public class Player1 : MonoBehaviour
             Debug.DrawRay(hit.point, slopeNormalPerp, Color.blue);
             Debug.DrawRay(hit.point, hit.normal, Color.green);
         }
-
-        if (slopeDownAngle > maxSlopeAngle || slopeSideAngle > maxSlopeAngle)
-        {
-            canWalkOnSlope = false;
-        }
-        else
-        {
-            canWalkOnSlope = true;
-        }
     }
 
     private void FixedUpdate()
@@ -234,12 +199,6 @@ public class Player1 : MonoBehaviour
         CheckGround(); //can move side to side but not jump
         SlopeCheck(); //on a hill will just keep sliding down
         ApplyMovement();
-    }
-
-    private void Flip()
-    {
-        facingDirection *= -1;
-        transform.Rotate(0.0f, 180.0f, 0.0f);
     }
 
     private void Jump()
@@ -255,57 +214,23 @@ public class Player1 : MonoBehaviour
         }
     }
 
-    private void logPlayerNotActiveArray()
+    private void Flip()
     {
-        string result = "bools list: ";
-
-        foreach (var item in playerNotActive)
-        {
-            result += item.ToString() + ", ";
-        }
-
-        Debug.Log(result);
-        Debug.Log("isPlayerNotActive " + isPlayerNotActive());
+        facingDirection *= -1;
+        transform.Rotate(0.0f, 180.0f, 0.0f);
     }
 
     private void CheckInput()
     {
-        // xInput = Input.GetAxisRaw("Horizontal");
-
-        // if (xInput == 1 && facingDirection == -1)
-        // {
-        //     Flip();
-        //     playerNotActive[2] = true;
-        // }
-        // else if (xInput == -1 && facingDirection == 1)
-        // {
-        //     Flip();
-        //     playerNotActive[3] = true;
-        // }
-
-        // if (Input.GetKeyDown(KeyCode.W))
-        // {
-        //     Jump();
-        //     playerNotActive[1] = true;
-        // }
-        // else
-        // {
-        //     playerNotActive[1] = false;
-        // }
-
-
-
-
         if (Input.GetKey("a"))
         {
             playerNotActive[2] = true;
-            // startAnim();
+
             if (facingDirection != -1)
             {
                 Flip();
             }
             xInput = -1;
-            // Flip();
         }
         else
         {
@@ -315,7 +240,6 @@ public class Player1 : MonoBehaviour
         if (Input.GetKey("d"))
         {
             playerNotActive[3] = true;
-            // startAnim();
             if (facingDirection != 1)
             {
                 Flip();
@@ -330,7 +254,6 @@ public class Player1 : MonoBehaviour
         if (Input.GetKey("w"))
         {
             Jump();
-            logPlayerNotActiveArray();
         }
 
         if (Input.GetKey("w"))
@@ -346,8 +269,46 @@ public class Player1 : MonoBehaviour
         if (Input.GetKeyUp("a") || Input.GetKeyUp("d"))
         {
             xInput = 0;
-            logPlayerNotActiveArray();
         }
+
+        if (rb.IsTouching(CastleDoor))
+        {
+            canvas.gameObject.SetActive(true);
+
+            if (Input.GetKey("u"))
+            {
+                ChangeScene();
+            }
+        }
+        else
+        {
+            canvas.gameObject.SetActive(false);
+        }
+    }
+
+    void ChangeScene()
+    {
+        const string sceneToLoad = "Assets/Scenes/Menu.unity";
+        var op = SceneManager.LoadSceneAsync(sceneToLoad, LoadSceneMode.Additive);
+        op.completed += (AsyncOperation obj) =>
+        {
+            Scene loadedScene = SceneManager.GetSceneByPath("Assets/Scenes/Menu.unity");
+            //Debug.Log($"{sceneToLoad} finished loading (build index: {loadedScene.buildIndex}).");
+            Debug.Log($"It has {loadedScene.rootCount} root(s).");
+            //Debug.Log($"There are now {SceneManager.loadedSceneCount} Scenes open.");
+        };
+    }
+
+    void Update()
+    {
+        xInput = Input.GetAxisRaw("Horizontal");
+
+        if (Input.GetKeyDown("c"))
+        {
+            TakeDamage(20);
+        }
+        CheckInput();
+        // canChangeScene();
     }
 
     void TakeDamage(int damage)
@@ -355,66 +316,5 @@ public class Player1 : MonoBehaviour
         currentHealth -= damage;
 
         healthbar.SetHealth(currentHealth);
-    }
-
-    void Update()
-    {
-        // transform.position = myPlay.position + myPos;
-
-        xInput = Input.GetAxisRaw("Horizontal");
-
-        // Debug.Log("Text: ");
-
-
-
-        // if (xInput != 0)
-        // {
-        //     // Debug.Log("animation should be running now");
-        //     anim.SetBool("startRunAnim", true);
-        // }
-
-        if (Input.GetKeyDown("c"))
-        {
-            TakeDamage(20);
-        }
-
-        // Debug.Log(movementSpeed);
-
-        // if(movementSpeed > .05)
-        // {
-        //     Debug.Log("turn on isIdling and start idling animation");
-        // }
-
-
-        //  if(xInput == 0)
-        // {
-        //     anim.SetBool("startRunAnim", false);
-        //     Debug.Log("is this ever being called?");
-        //     anim.SetBool("isIdling", true);
-        // }
-
-
-        // anim.SetBool("startRunAnim", false);
-
-        // if (Input.GetKeyDown(KeyCode.UpArrow))input
-        // if (Input.GetButton("ightArrow"))
-        // {
-
-        //     Debug.Log("this hoe working as im jumping");
-
-        //     // anim.SetTrigger("startRunAnim");
-
-        //      anim.SetBool("startRunAnim", true);
-        //     // Debug.Log("Text: " );
-
-        //     // if (Input.GetKeyUp(KeyCode.UpArrow))
-        //     // {
-        //     //     anim.SetTrigger("startRunAnim");
-        //     // }
-        // }
-
-
-
-        CheckInput();
     }
 }

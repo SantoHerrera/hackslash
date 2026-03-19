@@ -13,6 +13,10 @@ public class Player2Health : MonoBehaviour
     // HealthBar player1 = new HealthBar();
 
     // Start is called before the first frame update
+
+        public AudioSource source;
+    public AudioClip clip;
+
     void Start()
     {
         currentHealth = maxHealth;    
@@ -21,6 +25,7 @@ public class Player2Health : MonoBehaviour
 
     public void TakeDamage(int damage)
     {
+        source.PlayOneShot(clip);
         currentHealth -= damage;
 
         if (currentHealth <= 0)

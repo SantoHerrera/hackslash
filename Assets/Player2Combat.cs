@@ -13,6 +13,9 @@ public class Player2Combat : MonoBehaviour
     public float attackRange = 0.5f;
     public int attackDamage = 20;
 
+    public AudioSource source;
+    public AudioClip clip;
+
 
     // Update is called once per frame
     void Update()
@@ -20,6 +23,7 @@ public class Player2Combat : MonoBehaviour
         if(Input.GetKeyDown(KeyCode.M))
         {
             Attack();
+            //source.PlayOneShot(clip);
         }
         
     }

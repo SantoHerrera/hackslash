@@ -10,6 +10,8 @@ public class Player1Health : MonoBehaviour
     public HealthBar healthBar;
     public Animator animators;
     // HealthBar player1 = new HealthBar();
+    public AudioSource source;
+    public AudioClip clip;
 
     // Start is called before the first frame update
     void Start()
@@ -20,6 +22,7 @@ public class Player1Health : MonoBehaviour
 
     public void TakeDamage(int damage)
     {
+        source.PlayOneShot(clip);
         currentHealth -= damage;
 
         if (currentHealth <= 0)

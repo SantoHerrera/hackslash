@@ -72,7 +72,7 @@ public class Player2 : MonoBehaviour
         {
             result += item.ToString() + ", ";
         }
-        
+
         Debug.Log(result);
     }
 
@@ -190,10 +190,27 @@ public class Player2 : MonoBehaviour
         CheckGround(); //can move side to side but not jump
         SlopeCheck(); //on a hill will just keep sliding down
         ApplyMovement();
+
+        // void OnCollisionEnter2D(Collision col)
+        // {
+        //     Debug.Log(OnCollisionEnter2D);
+        // }
+
+        // void OnCollisionEnter2D(Collision2D col)
+        // {
+        //     Debug.Log("OnCollisionEnter2D");
+        // }
     }
 
     private void Jump()
     {
+        // if(canClimpLadder){
+        //     isTouchingLadder()
+        //     {
+
+        //     }
+        // }
+
         if (canJump)
         {
             canJump = false;
@@ -202,6 +219,9 @@ public class Player2 : MonoBehaviour
             rb.velocity = newVelocity;
             newForce.Set(0.0f, jumpForce);
             rb.AddForce(newForce, ForceMode2D.Impulse);
+            // if(isTouchingLadder()){
+
+            // }
         }
     }
 
@@ -261,6 +281,9 @@ public class Player2 : MonoBehaviour
             playerNotActive[1] = false;
         }
     }
+
+    // private void OnTriggerEnter2D()
+    // {}
 
     void Update()
     {
